@@ -944,6 +944,32 @@ bool emit_dot2_add_half_instruction(Converter::Impl &impl, const llvm::CallInst 
 	spv::Id a = impl.build_vector(half_type_id, as, 2);
 	spv::Id b = impl.build_vector(half_type_id, bs, 2);
 
+	if (true) {
+		spv::Id int_type_id = builder.makeIntType(32);
+		auto *a_cast = impl.allocate(spv::OpBitcast, int_type_id);
+		a_cast->add_id(a);
+		impl.add(a_cast);
+		a = a_cast->id;
+
+		auto *b_cast = impl.allocate(spv::OpBitcast, int_type_id);
+		b_cast->add_id(b);
+		impl.add(b_cast);
+		b = b_cast->id;
+
+		if (!impl.amd_gcn_shader_ext)
+			impl.amd_gcn_shader_ext = builder.import("SPV_AMD_gcn_shader");
+
+		Operation *op = impl.allocate(spv::OpExtInst, instruction);
+		op->add_id(impl.amd_gcn_shader_ext);
+		op->add_literal(4);
+		op->add_id(a);
+		op->add_id(b);
+		op->add_id(impl.get_id_for_value(instruction->getOperand(1)));
+
+		impl.add(op);
+		return true;
+	}
+
 	auto *dot_op = impl.allocate(spv::OpFMul, builder.makeVectorType(half_type_id, 2));
 	dot_op->add_id(a);
 	dot_op->add_id(b);

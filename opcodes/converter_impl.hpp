@@ -655,6 +655,7 @@ struct Converter::Impl
 	                                         spv::Id initializer, const char *name = nullptr);
 
 	spv::Id glsl_std450_ext = 0;
+	spv::Id amd_gcn_shader_ext = 0;
 	spv::Id cmpxchg_type = 0;
 	spv::Id texture_sample_pos_lut_id = 0;
 	spv::Id rasterizer_sample_count_id = 0;
